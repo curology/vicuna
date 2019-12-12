@@ -1,7 +1,14 @@
 [package]
 name = "vicuna"
+description = "AWS Lambdas made simple."
 version = "0.1.0"
 authors = ["Max Countryman <maxc@me.com>"]
+homepage = "https://github.com/PocketDerm/vicuna"
+repository = "https://github.com/PocketDerm/vicuna"
+documentation = "https://docs.rs/vicuna"
+keywords = ["serverless", "lambda"]
+license = "MIT"
+readme = "README.md"
 edition = "2018"
 
 [dependencies]

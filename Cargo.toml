@@ -1,0 +1,10 @@
+[package]
+name = "vicuna"
+version = "0.1.0"
+authors = ["Max Countryman <maxc@me.com>"]
+edition = "2018"
+
+[dependencies]
+failure = "0.1.6"
+lambda_http = "0.1.1"
+lambda_runtime = "0.2.1"

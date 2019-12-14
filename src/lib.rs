@@ -81,7 +81,7 @@
 //! [`serverless-rust`]: https://github.com/softprops/serverless-rust
 
 pub use handler::{default_handler, Handler};
-pub use middleware::HasMiddleware;
+pub use middleware::{HasMiddleware, Middleware};
 
 pub use lambda_http;
 pub use lambda_runtime;

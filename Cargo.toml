@@ -1,7 +1,7 @@
 [package]
 name = "vicuna"
 description = "AWS Lambdas made simple."
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Max Countryman <maxc@me.com>"]
 homepage = "https://github.com/PocketDerm/vicuna"
 repository = "https://github.com/PocketDerm/vicuna"

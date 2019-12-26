@@ -3,7 +3,7 @@ name: Rust
 on: [push]
 
 jobs:
-    codestyle:
+  codestyle:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Rust

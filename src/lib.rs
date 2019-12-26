@@ -51,18 +51,32 @@
 //!
 //! To illustrate, let's examine an example that utilizes our middleware above.
 //!
-//! ```
-//! use lambda_http::{lambda, IntoResponse, Request};
+//! ```rust,no_run
+//! use lambda_http::{
+//!    http::header::{HeaderName, HeaderValue},
+//!    lambda, IntoResponse, Request,
+//! };
 //! use lambda_runtime::{error::HandlerError, Context};
-//! use vicuna::{default_handler, Handle, WrapWith};
+//! use vicuna::{default_handler, Handle, Handler, WrapWith};
+//!
+//! fn add_header(handler: Handler) -> Handler {
+//!     Box::new(move |req, ctx| {
+//!         // Resolve any upstream middleware into a response.
+//!         let mut resp = handler(req, ctx)?;
+//!         // Add our custom header to the response.
+//!         resp.headers_mut().insert(
+//!             HeaderName::from_static("x-hello"),
+//!             HeaderValue::from_static("world"),
+//!         );
+//!         Ok(resp)
+//!     })
+//! }
 //!
 //! fn hello_lambda(req: Request, ctx: Context) -> Result<impl IntoResponse, HandlerError> {
 //!     default_handler().wrap_with(add_header).handle(req, ctx)
 //! }
 //!
-//! fn main() {
-//!     lambda!(hello_lambda)
-//! }
+//! lambda!(hello_lambda)
 //! ```
 //!
 //! This is a simple example that demonstrates how straightforward it is to establish an AWS Lambda

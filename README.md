@@ -6,6 +6,8 @@
 - Naturally modular design
 - Purpose-built for [`serverless-rust`](https://www.npmjs.com/package/serverless-rust)
 
+> ⚠️ **Active Development**: Vicuna's API has not stabalized and may change without warning between releases!
+
 ## 📦 Install
 
 Add the following to your `Cargo.toml` file.

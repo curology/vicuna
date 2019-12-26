@@ -28,9 +28,9 @@
 //! use vicuna::Handler;
 //!
 //! fn add_header(handler: Handler) -> Handler {
-//!     Box::new(move |req| {
+//!     Box::new(move |req, ctx| {
 //!         // Resolve any upstream middleware into a response.
-//!         let mut resp = handler(req)?;
+//!         let mut resp = handler(req, ctx)?;
 //!         // Add our custom header to the response.
 //!         resp.headers_mut().insert(
 //!             HeaderName::from_static("x-hello"),
@@ -56,8 +56,8 @@
 //! use lambda_runtime::{error::HandlerError, Context};
 //! use vicuna::{default_handler, Handle, WrapWith};
 //!
-//! fn hello_lambda(req: Request, _: Context) -> Result<impl IntoResponse, HandlerError> {
-//!     default_handler().wrap_with(add_header).handle(req)
+//! fn hello_lambda(req: Request, ctx: Context) -> Result<impl IntoResponse, HandlerError> {
+//!     default_handler().wrap_with(add_header).handle(req, ctx)
 //! }
 //!
 //! fn main() {

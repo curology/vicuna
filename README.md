@@ -58,16 +58,16 @@ Middleware are wrapped around handlers, which themselves produce a handler for
 chainable invocation:
 
 ```rust
-use lambda_http::{lambda, IntoResponse, Request, Response};
+use lambda_http::{lambda, IntoResponse, Request};
 use lambda_runtime::{error::HandlerError, Context};
 use vicuna::{Handle, WrapWith};
 
-fn hello_lambda(req: Request, _: Context) -> Result<impl IntoResponse, HandlerError> {
+fn hello_lambda(req: Request, context: Context) -> Result<impl IntoResponse, HandlerError> {
     // Middleware is applied in reverse order!
-    let handler = default_handler()
+    default_handler()
         .wrap_with(say_hello)
         .wrap_with(add_header)
-        .handle(req);
+        .handle(req, context)
 }
 
 fn main() {

@@ -52,14 +52,12 @@
 //! To illustrate, let's examine an example that utilizes our middleware above.
 //!
 //! ```
-//! use failure;
 //! use lambda_http::{lambda, IntoResponse, Request};
 //! use lambda_runtime::{error::HandlerError, Context};
-//! use vicuna::{default_handler, HasMiddleware};
+//! use vicuna::{default_handler, Handle, WrapWith};
 //!
 //! fn hello_lambda(req: Request, _: Context) -> Result<impl IntoResponse, HandlerError> {
-//!     let handler = default_handler().wrap_with(add_header);
-//!     Ok(handler(req).map_err(|e| -> failure::Error { e.into() })?)
+//!     default_handler().wrap_with(add_header).handle(req)
 //! }
 //!
 //! fn main() {
@@ -80,8 +78,8 @@
 //! [`lambda_runtime`]: ../lambda_runtime/index.html
 //! [`serverless-rust`]: https://github.com/softprops/serverless-rust
 
-pub use handler::{default_handler, Handler};
-pub use middleware::{HasMiddleware, Middleware};
+pub use handler::{default_handler, Handle, Handler, WrapWith};
+pub use middleware::Middleware;
 
 pub use lambda_http;
 pub use lambda_runtime;

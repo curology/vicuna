@@ -41,9 +41,9 @@ use lambda_http::http::header::{HeaderName, HeaderValue};
 use vicuna::Handler;
 
 fn add_header(handler: Handler) -> Handler {
-    Box::new(move |req| {
+    Box::new(move |request, context| {
         // Resolve any upstream middleware into a response.
-        let mut resp = handler(req)?;
+        let mut resp = handler(request, context)?;
         // Add our custom header to the response.
         resp.headers_mut().insert(
             HeaderName::from_static("x-hello"),
@@ -62,12 +62,12 @@ use lambda_http::{lambda, IntoResponse, Request};
 use lambda_runtime::{error::HandlerError, Context};
 use vicuna::{Handle, WrapWith};
 
-fn hello_lambda(req: Request, context: Context) -> Result<impl IntoResponse, HandlerError> {
+fn hello_lambda(request: Request, context: Context) -> Result<impl IntoResponse, HandlerError> {
     // Middleware is applied in reverse order!
     default_handler()
         .wrap_with(say_hello)
         .wrap_with(add_header)
-        .handle(req, context)
+        .handle(request, context)
 }
 
 fn main() {

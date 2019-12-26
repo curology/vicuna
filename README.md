@@ -60,14 +60,14 @@ chainable invocation:
 ```rust
 use lambda_http::{lambda, IntoResponse, Request, Response};
 use lambda_runtime::{error::HandlerError, Context};
-use vicuna::HasMiddleware;
+use vicuna::{Handle, WrapWith};
 
 fn hello_lambda(req: Request, _: Context) -> Result<impl IntoResponse, HandlerError> {
     // Middleware is applied in reverse order!
-    let handler = default_handler().wrap_with(say_hello).wrap_with(add_header);
-
-    // Coerce errors into `failure::Error`.
-    Ok(handler(req).map_err(|e| -> failure::Error { e.into() })?)
+    let handler = default_handler()
+        .wrap_with(say_hello)
+        .wrap_with(add_header)
+        .handle(req);
 }
 
 fn main() {

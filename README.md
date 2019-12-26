@@ -1,5 +1,7 @@
 # Vicuna
 
+[![GitHub Actions](https://github.com/PocketDerm/vicuna/workflows/Rust/badge.svg)](https://github.com/PocketDerm/vicuna/actions) [![crates.io](http://meritbadge.herokuapp.com/vicuna)](https://crates.io/crates/vicuna) [![Released API docs](https://docs.rs/vicuna/badge.svg)](http://docs.rs/vicuna) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 > AWS Lambdas in Rust made simple. 
 
 - Simple, middleware-based interface

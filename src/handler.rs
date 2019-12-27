@@ -16,37 +16,30 @@ type HandlerResult<E> = Result<LambdaResponse, E>;
 /// of the box, such as Serde JSON errors.
 pub type Handler<E = error::Error> = Box<dyn Fn(Request, Context) -> HandlerResult<E>>;
 
-/// A trait which provides a method for handling requests.
-pub trait Handle {
-    /// Handles a request.
-    fn handle(self, request: Request, context: Context) -> Result<LambdaResponse, HandlerError>;
-}
+/// A trait that houses methods related to handlers that can be wrapped with middleware.
+pub trait WrappingHandler<E> {
+    /// Wraps a `Handler` with the provided middleware, returning a new `Handler`.
+    fn wrap_with<M: Fn(Handler<E>) -> Handler<E>>(self, middleware: M) -> Handler<E>
+    where
+        Self: 'static + Fn(Request, Context) -> Result<LambdaResponse, E> + Sized,
+    {
+        middleware(Box::new(self))
+    }
 
-impl<E> Handle for Handler<E>
-where
-    E: 'static + Sync + Send + failure::Fail + From<failure::Error>,
-{
-    /// Handles a request, returning a `HandlerResult`. Any errors will be mapped to a
-    /// `failure::Error`.
-    fn handle(self, request: Request, context: Context) -> Result<LambdaResponse, HandlerError> {
-        Ok(self(request, context).map_err(|e| -> failure::Error { e.into() })?)
+    /// Returns a `Handler` that maps errors to `HandlerError`, suitable for passing directly to
+    /// the `lambda` macro.
+    fn handler(self) -> Handler<HandlerError>
+    where
+        Self: 'static + Fn(Request, Context) -> Result<LambdaResponse, E> + Sized,
+        E: Send + Sync + failure::Fail + From<failure::Error>,
+    {
+        Box::new(move |request, context| {
+            Ok(self(request, context).map_err(|e| -> failure::Error { e.into() })?)
+        })
     }
 }
 
-/// A trait which provides a method for wrapping handlers with middleware.
-pub trait WrapWith<E>: Handle {
-    /// Wraps a handler with the provided middleware, returning a new handler.
-    fn wrap_with<M: Fn(Handler<E>) -> Handler<E>>(self, middleware: M) -> Handler<E>;
-}
-
-impl<E> WrapWith<E> for Handler<E>
-where
-    E: 'static + Sync + Send + failure::Fail + From<failure::Error>,
-{
-    fn wrap_with<M: Fn(Handler<E>) -> Handler<E>>(self, middleware: M) -> Handler<E> {
-        middleware(self)
-    }
-}
+impl<E> WrappingHandler<E> for Handler<E> {}
 
 /// A default handler which returns a successful response.
 ///

@@ -28,9 +28,9 @@
 //! use vicuna::Handler;
 //!
 //! fn add_header(handler: Handler) -> Handler {
-//!     Box::new(move |req, ctx| {
+//!     Box::new(move |request, context| {
 //!         // Resolve any upstream middleware into a response.
-//!         let mut resp = handler(req, ctx)?;
+//!         let mut resp = handler(request, context)?;
 //!         // Add our custom header to the response.
 //!         resp.headers_mut().insert(
 //!             HeaderName::from_static("x-hello"),
@@ -54,15 +54,14 @@
 //! ```rust,no_run
 //! use lambda_http::{
 //!    http::header::{HeaderName, HeaderValue},
-//!    lambda, IntoResponse, Request,
+//!    lambda,
 //! };
-//! use lambda_runtime::{error::HandlerError, Context};
-//! use vicuna::{default_handler, Handle, Handler, WrapWith};
+//! use vicuna::{default_handler, Handler, WrappingHandler};
 //!
 //! fn add_header(handler: Handler) -> Handler {
-//!     Box::new(move |req, ctx| {
+//!     Box::new(move |request, context| {
 //!         // Resolve any upstream middleware into a response.
-//!         let mut resp = handler(req, ctx)?;
+//!         let mut resp = handler(request, context)?;
 //!         // Add our custom header to the response.
 //!         resp.headers_mut().insert(
 //!             HeaderName::from_static("x-hello"),
@@ -72,11 +71,7 @@
 //!     })
 //! }
 //!
-//! fn hello_lambda(req: Request, ctx: Context) -> Result<impl IntoResponse, HandlerError> {
-//!     default_handler().wrap_with(add_header).handle(req, ctx)
-//! }
-//!
-//! lambda!(hello_lambda)
+//! lambda!(default_handler().wrap_with(add_header).handler())
 //! ```
 //!
 //! This is a simple example that demonstrates how straightforward it is to establish an AWS Lambda
@@ -92,7 +87,7 @@
 //! [`lambda_runtime`]: ../lambda_runtime/index.html
 //! [`serverless-rust`]: https://github.com/softprops/serverless-rust
 
-pub use handler::{default_handler, Handle, Handler, WrapWith};
+pub use handler::{default_handler, Handler, WrappingHandler};
 pub use middleware::Middleware;
 
 pub use lambda_http;

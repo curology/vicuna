@@ -31,3 +31,14 @@ jobs:
         uses: hecrj/setup-rust-action@v1
       - uses: actions/checkout@master
       - run: cargo check --all
+
+  test:
+      needs: [codestyle, lint, compile]
+      runs-on: ubuntu-latest
+      steps:
+      - name: Set up Rust
+        uses: hecrj/setup-rust-action@v1
+        with:
+          rust-version: stable
+      - uses: actions/checkout@v1
+      - run: cargo test

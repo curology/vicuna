@@ -1,6 +1,7 @@
 use std::fmt::{self, Display};
 
 use failure::{Backtrace, Context, Fail};
+use lambda_http::http::Error as HttpError;
 use lambda_runtime::error::HandlerError;
 
 /// The error type for Vicuna operations. Wraps an [`ErrorKind`].
@@ -53,6 +54,12 @@ impl From<failure::Error> for Error {
     }
 }
 
+impl From<HttpError> for Error {
+    fn from(err: HttpError) -> Error {
+        ErrorKind::Http(err).into()
+    }
+}
+
 /// A list specifying kinds of errors Vicuna handlers may encounter.
 #[derive(Debug, Fail)]
 pub enum ErrorKind {
@@ -63,4 +70,8 @@ pub enum ErrorKind {
     /// A `failure::Error`, as provided by the `failure` crate.
     #[fail(display = "{}", _0)]
     Failure(#[cause] failure::Error),
+
+    /// A `http::error::Error` as provided by the `http` crate.
+    #[fail(display = "{}", _0)]
+    Http(#[cause] HttpError),
 }

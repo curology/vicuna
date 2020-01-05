@@ -20,23 +20,17 @@
 //!
 //! ## Examples
 //!
-//! To make this more concrete, let's explore a simple middleware which will add a header to our
-//! response.
+//! To make this more concrete, let's demonstrate what the structure of middleware looks like.
 //!
-//! ```
-//! use lambda_http::http::header::{HeaderName, HeaderValue};
+//! ```rust,no_run
 //! use vicuna::Handler;
 //!
-//! fn add_header(handler: Handler) -> Handler {
+//! fn my_middleware(handler: Handler) -> Handler {
 //!     Box::new(move |request, context| {
-//!         // Resolve any upstream middleware into a response.
-//!         let mut resp = handler(request, context)?;
-//!         // Add our custom header to the response.
-//!         resp.headers_mut().insert(
-//!             HeaderName::from_static("x-hello"),
-//!             HeaderValue::from_static("world"),
-//!         );
-//!         Ok(resp)
+//!         // Resolve upstream middleware chain into a response...
+//!         let mut response = handler(request, context);
+//!         // ...mutate response as desired.
+//!         response
 //!     })
 //! }
 //! ```
@@ -49,29 +43,21 @@
 //! convenience and can be used to start a chain of middleware. Once the chain is established, we
 //! are ready to provide it as a handler to the `lambda_runtime` framework via the [`lambda!`] macro.
 //!
-//! To illustrate, let's examine an example that utilizes our middleware above.
+//! To illustrate, let's examine an example that utilizes builtin middleware.
 //!
 //! ```rust,no_run
-//! use lambda_http::{
-//!    http::header::{HeaderName, HeaderValue},
-//!    lambda,
+//! use vicuna::{
+//!     default_handler,
+//!     error,
+//!     lambda_http::lambda,
+//!     middleware::{body, header},
+//!     Handler, WrappingHandler,
 //! };
-//! use vicuna::{default_handler, Handler, WrappingHandler};
 //!
-//! fn add_header(handler: Handler) -> Handler {
-//!     Box::new(move |request, context| {
-//!         // Resolve any upstream middleware into a response.
-//!         let mut resp = handler(request, context)?;
-//!         // Add our custom header to the response.
-//!         resp.headers_mut().insert(
-//!             HeaderName::from_static("x-hello"),
-//!             HeaderValue::from_static("world"),
-//!         );
-//!         Ok(resp)
-//!     })
-//! }
-//!
-//! lambda!(default_handler().wrap_with(add_header).handler())
+//! lambda!(default_handler::<error::Error>()
+//!     .wrap_with(body("Hello, world!"))
+//!     .wrap_with(header("x-foo", "bar"))
+//!     .handler())
 //! ```
 //!
 //! This is a simple example that demonstrates how straightforward it is to establish an AWS Lambda

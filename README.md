@@ -28,8 +28,7 @@ appropriate response. The simplest handler is the `default_handler` provided by
 the crate:
 
 ```rust
-use lambda_http::lambda;
-use vicuna::default_handler;
+use vicuna::{default_handler, lambda_http::lambda};
 
 fn main() {
     lambda!(default_handler())
@@ -41,19 +40,21 @@ lifecycle in an arbitrary fashion. For example, a middleware that adds a
 header to our response could look like this:
 
 ```rust
-use lambda_http::http::header::{HeaderName, HeaderValue};
-use vicuna::Handler;
+use vicuna::{
+    lambda_http::http::header::{HeaderName, HeaderValue},
+    Handler,
+};
 
 fn add_header(handler: Handler) -> Handler {
     Box::new(move |request, context| {
         // Resolve any upstream middleware into a response.
-        let mut resp = handler(request, context)?;
+        let mut response = handler(request, context)?;
         // Add our custom header to the response.
-        resp.headers_mut().insert(
+        response.headers_mut().insert(
             HeaderName::from_static("x-hello"),
             HeaderValue::from_static("world"),
         );
-        Ok(resp)
+        Ok(response)
     })
 }
 ```
@@ -62,8 +63,7 @@ Middleware are wrapped around handlers, which themselves produce a handler for
 chainable invocation:
 
 ```rust
-use lambda_http::lambda;
-use vicuna::{default_handler, WrappingHandler};
+use vicuna::{default_handler, lambda_http::lambda, WrappingHandler};
 
 fn main() {
     lambda!(default_handler()

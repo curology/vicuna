@@ -70,10 +70,7 @@ mod tests {
 
     fn hello_world(_: Handler) -> Handler {
         Box::new(move |_request, _context| {
-            Ok(Response::builder()
-                .body("Hello, world!")
-                .unwrap()
-                .into_response())
+            Ok(Response::builder().body("Hello, world!")?.into_response())
         })
     }
 

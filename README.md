@@ -47,7 +47,7 @@ fn my_middleware(handler: Handler) -> Handler {
         // Resolve upstream middleware chain into a response...
         let mut response = handler(request, context);
         // ...mutate response as desired.
-        Ok(response)
+        response
     })
 }
 ```

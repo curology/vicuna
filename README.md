@@ -58,6 +58,7 @@ chainable invocation:
 ```rust
 use vicuna::{
     default_handler,
+    error,
     lambda_http::lambda,
     middleware::{body, header},
     Handler,
@@ -65,7 +66,7 @@ use vicuna::{
 };
 
 fn main() {
-    lambda!(default_handler()
+    lambda!(default_handler::<error::Error>()
         .wrap_with(body("Hello, world!"))
         .wrap_with(header("x-foo", "bar"))
         .handler())

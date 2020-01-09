@@ -54,35 +54,17 @@ mod tests {
     use std::fmt::Debug;
 
     use lambda_http::{
-        http::{
-            header::{HeaderName, HeaderValue},
-            StatusCode,
-        },
+        http::{header::HeaderValue, StatusCode},
         Body, IntoResponse,
     };
     use lambda_runtime::Context;
+
+    use crate::middleware::{body, header};
 
     use super::*;
 
     fn echo_body(_: Handler) -> Handler {
         Box::new(move |request, _context| Ok(request.into_body().into_response()))
-    }
-
-    fn hello_world(_: Handler) -> Handler {
-        Box::new(move |_request, _context| {
-            Ok(Response::builder().body("Hello, world!")?.into_response())
-        })
-    }
-
-    fn add_header(handler: Handler) -> Handler {
-        Box::new(move |request, context| {
-            let mut resp = handler(request, context)?;
-            resp.headers_mut().insert(
-                HeaderName::from_static("x-hello"),
-                HeaderValue::from_static("world"),
-            );
-            Ok(resp)
-        })
     }
 
     fn handler_resp<E: Debug>(handler: Handler<E>) -> LambdaResponse {
@@ -101,7 +83,9 @@ mod tests {
 
     #[test]
     fn test_wrapping_handler_hello_world() {
-        let handler = default_handler().wrap_with(hello_world).handler();
+        let handler = default_handler::<error::Error>()
+            .wrap_with(body("Hello, world!"))
+            .handler();
         let resp = handler_resp(handler);
         assert_eq!(resp.status(), StatusCode::OK);
         assert_eq!(resp.into_body(), Body::Text("Hello, world!".to_string()));
@@ -109,9 +93,9 @@ mod tests {
 
     #[test]
     fn test_wrapping_handler_chaining() {
-        let handler = default_handler()
-            .wrap_with(hello_world)
-            .wrap_with(add_header)
+        let handler = default_handler::<error::Error>()
+            .wrap_with(body("Hello, world!"))
+            .wrap_with(header("x-hello", "world"))
             .handler();
         let resp = handler_resp(handler);
         assert_eq!(resp.status(), StatusCode::OK);

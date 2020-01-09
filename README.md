@@ -36,24 +36,17 @@ fn main() {
 ```
 
 Handlers can be composed from middleware which can handle the request-response
-lifecycle in an arbitrary fashion. For example, a middleware that adds a
-header to our response could look like this:
+lifecycle in an arbitrary fashion. For example, custom middleware can be
+written like so:
 
 ```rust
-use vicuna::{
-    lambda_http::http::header::{HeaderName, HeaderValue},
-    Handler,
-};
+use vicuna::Handler;
 
-fn add_header(handler: Handler) -> Handler {
+fn my_middleware(handler: Handler) -> Handler {
     Box::new(move |request, context| {
-        // Resolve any upstream middleware into a response.
-        let mut response = handler(request, context)?;
-        // Add our custom header to the response.
-        response.headers_mut().insert(
-            HeaderName::from_static("x-hello"),
-            HeaderValue::from_static("world"),
-        );
+        // Resolve upstream middleware chain into a response...
+        let mut response = handler(request, context);
+        // ...mutate response as desired.
         Ok(response)
     })
 }
@@ -63,12 +56,18 @@ Middleware are wrapped around handlers, which themselves produce a handler for
 chainable invocation:
 
 ```rust
-use vicuna::{default_handler, lambda_http::lambda, WrappingHandler};
+use vicuna::{
+    default_handler,
+    lambda_http::lambda,
+    middleware::{body, header},
+    Handler,
+    WrappingHandler,
+};
 
 fn main() {
     lambda!(default_handler()
-        .wrap_with(say_hello)
-        .wrap_with(add_header)
+        .wrap_with(body("Hello, world!"))
+        .wrap_with(header("x-foo", "bar"))
         .handler())
 }
 ```

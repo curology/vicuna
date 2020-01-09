@@ -16,7 +16,7 @@ Add the following to your `Cargo.toml` file.
 
 ```toml
 [dependencies]
-vicuna = "0.4.0"
+vicuna = "0.4.1"
 ```
 
 ## 🤸 Usage

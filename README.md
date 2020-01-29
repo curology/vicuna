@@ -56,14 +56,9 @@ Middleware are wrapped around handlers, which themselves produce a handler for
 chainable invocation:
 
 ```rust
-use vicuna::{
-    default_handler,
-    error,
-    lambda_http::lambda,
-    middleware::{body, header},
-    Handler,
-    WrappingHandler,
-};
+use vicuna::lambda_http::lambda;
+use vicuna::middleware::{body, header};
+use vicuna::{default_handler, error, Handler, WrappingHandler};
 
 fn main() {
     lambda!(default_handler::<error::Error>()

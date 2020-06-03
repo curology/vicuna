@@ -51,7 +51,8 @@
 //!     error,
 //!     lambda_http::lambda,
 //!     middleware::{body, header},
-//!     Handler, WrappingHandler,
+//!     Handler,
+//!     WrappingHandler,
 //! };
 //!
 //! lambda!(default_handler::<error::Error>()

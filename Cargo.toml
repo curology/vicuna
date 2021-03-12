@@ -13,5 +13,5 @@ edition = "2018"
 
 [dependencies]
 failure = "0.1.6"
-lambda_http = "0.1.1"
+lambda_http = "0.3.0"
 lambda_runtime = "0.2.1"
